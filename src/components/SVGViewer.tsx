@@ -8,6 +8,14 @@ interface SVGObjectInfo {
   attributes: { [key: string]: string };
   path?: string;
   children?: SVGObjectInfo[];
+  position?: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+  };
 }
 
 interface SVGViewerProps {
@@ -33,6 +41,19 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       className: element.className.toString(),
       attributes,
     };
+
+    // Get position information for the element
+    if (element instanceof SVGGraphicsElement) {
+      const bbox = element.getBBox();
+      info.position = {
+        left: bbox.x,
+        top: bbox.y,
+        right: bbox.x + bbox.width,
+        bottom: bbox.y + bbox.height,
+        width: bbox.width,
+        height: bbox.height
+      };
+    }
 
     if (element instanceof SVGPathElement) {
       info.path = element.getAttribute('d') || undefined;

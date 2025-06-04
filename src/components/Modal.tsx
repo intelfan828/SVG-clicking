@@ -7,6 +7,14 @@ interface SVGObjectInfo {
   attributes: { [key: string]: string };
   path?: string;
   children?: SVGObjectInfo[];
+  position?: {
+    left: number;
+    top: number;
+    right: number;
+    bottom: number;
+    width: number;
+    height: number;
+  };
 }
 
 interface ModalProps {
@@ -99,6 +107,36 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, data }) => {
                 <span>{data.className}</span>
               </div>
             </section>
+
+            {data.position && (
+              <section style={{ marginBottom: '24px' }}>
+                <h3 style={{ 
+                  color: '#1a1a1a',
+                  fontSize: '18px',
+                  marginBottom: '16px',
+                  fontWeight: '500'
+                }}>Position Information</h3>
+                <div style={{ 
+                  display: 'grid',
+                  gridTemplateColumns: 'auto 1fr',
+                  gap: '8px 16px',
+                  alignItems: 'baseline'
+                }}>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Left:</span>
+                  <span>{data.position.left.toFixed(2)}</span>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Top:</span>
+                  <span>{data.position.top.toFixed(2)}</span>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Right:</span>
+                  <span>{data.position.right.toFixed(2)}</span>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Bottom:</span>
+                  <span>{data.position.bottom.toFixed(2)}</span>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Width:</span>
+                  <span>{data.position.width.toFixed(2)}</span>
+                  <span style={{ fontWeight: '500', color: '#666' }}>Height:</span>
+                  <span>{data.position.height.toFixed(2)}</span>
+                </div>
+              </section>
+            )}
 
             <section style={{ marginBottom: '24px' }}>
               <h3 style={{ 
