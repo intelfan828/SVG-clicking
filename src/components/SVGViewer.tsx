@@ -104,23 +104,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
           />
         )}
       </div>
-      <div style={{ 
-        padding: '10px', 
-        background: '#f0f0f0', 
-        maxHeight: '200px', 
-        overflow: 'auto',
-        borderTop: '1px solid #ccc'
-      }}>
-        <div style={{ color: 'black', marginBottom: '10px', padding: '5px', background: '#fff', border: '1px solid #ddd' }}>
-          <strong>Debug Info:</strong> {debugInfo}
-        </div>
-        {clickedElement && (
-          <div style={{ color: 'black' }}>
-            <h3>Clicked Object:</h3>
-            <pre>{JSON.stringify(clickedElement, null, 2)}</pre>
-          </div>
-        )}
-      </div>
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
