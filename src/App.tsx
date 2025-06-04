@@ -1,12 +1,10 @@
-import svgPic from '/SVG222.svg'
 import './App.css'
+import MySvg from './MySvg'
 
 function App() {
   return (
     <>
-      <div>
-        <img src={svgPic} className="container my-svg" />
-      </div>
+      <MySvg />
     </>
   )
 }
