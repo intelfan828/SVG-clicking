@@ -95,7 +95,13 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     <div>
       <div ref={svgRef} style={{ width: '100%', height: '100%' }}>
         {svgContent && (
-          <div dangerouslySetInnerHTML={{ __html: svgContent }} />
+          <div 
+            style={{ 
+              transform: 'scale(0.5)',
+              transformOrigin: 'top left'
+            }}
+            dangerouslySetInnerHTML={{ __html: svgContent }} 
+          />
         )}
       </div>
       <div style={{ 
