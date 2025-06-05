@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { blockData, connectData } from './Data';
+import './SVGViewer.css';
 
 interface SVGViewerProps {
   svgContent?: string;
@@ -26,13 +27,10 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     const clickedElement = target.closest('g, path');
     
     if (clickedElement) {
-      const elementId = clickedElement.id;
-      // Find the parent g tag with id starting with 'g'
       const parentG = clickedElement.closest('g[id^="g"]');
       
       if (parentG) {
         const gId = parentG.id;
-        // Check if the clicked element is in blockData
         const block = blockData.find(block => block.id === gId);
         if (block) {
           setSelectedBlock(block);
@@ -42,63 +40,34 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   };
 
   return (
-    <div style={{ 
-      width: '100vw', 
-      height: '100vh',
-      display: 'flex',
-      backgroundColor: 'gray',
-      margin: 0,
-      padding: 0,
-      overflow: 'hidden'
-    }}>
-      <div style={{
-        width: '75vw',
-        height: '95vh',
-        border: '1px solid #444444',
-        overflow: 'hidden',
-        backgroundColor: 'white',
-        borderRadius: '10px',
-        margin: '2.5vh'
-      }}>
+    <div className="svg-viewer-container">
+      <div className="svg-viewer-content">
         {svgContent && (
           <div 
-            style={{
-              width: '100%',
-              height: '100%',
-              overflow: 'auto'
-            }}
+            className="svg-container"
             onClick={handleSVGClick}
             dangerouslySetInnerHTML={{ __html: svgContent }} 
           />
         )}
       </div>
       
-      {/* Right Panel */}
-      <div style={{
-        width: '20vw',
-        height: '95vh',
-        border: '1px solid #444444',
-        backgroundColor: 'white',
-        borderRadius: '10px',
-        margin: '2.5vh 2.5vh 2.5vh 0',
-        padding: '20px',
-        overflow: 'auto',
-        color: 'black'
-      }}>
+      <div className="details-panel">
         {selectedBlock ? (
           <div>
-            <h2>{selectedBlock.data.name}</h2>
-            <p>{selectedBlock.data.description}</p>
-            <h3>Q&A</h3>
-            {selectedBlock.data.qa.map((item, index) => (
-              <div key={index} style={{ marginBottom: '20px' }}>
-                <p><strong>Q: {item.question}</strong></p>
-                <p>A: {item.answer}</p>
-              </div>
-            ))}
+            <h2 className="block-title">{selectedBlock.data.name}</h2>
+            <p className="block-description">{selectedBlock.data.description}</p>
+            <div className="qa-section">
+              <h3 className="qa-title">Q&A</h3>
+              {selectedBlock.data.qa.map((item, index) => (
+                <div key={index} className="qa-item">
+                  <p className="question">Q: {item.question}</p>
+                  <p className="answer">A: {item.answer}</p>
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
-          <p>Click on a block to view its details</p>
+          <p className="placeholder">Click on a block to view its details</p>
         )}
       </div>
     </div>
