@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { blockData } from './Data';
-import type { AnswerSegment, BlockData } from './Data';
+import { blockData } from './data';
+import type { AnswerSegment, BlockData } from './data';
 import './SVGViewer.css';
 
 interface SVGViewerProps {
@@ -47,9 +47,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     return answer.map((segment, index) => {
       switch (segment.type) {
         case 'text':
-          return <span key={index}>{segment.content}</span>;
         case 'bold':
-          return <strong key={index}>{segment.content}</strong>;
+          return <span key={index} style={{ fontWeight: segment.type === 'bold' ? 'bold' : 'normal' }}>{segment.content}</span>;
         case 'break':
           return <br key={index} />;
         default:
