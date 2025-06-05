@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react';
-import Modal from './Modal';
 
 interface SVGObjectInfo {
   id: string;
@@ -16,9 +15,6 @@ interface SVGViewerProps {
 
 const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const svgRef = useRef<HTMLDivElement>(null);
-  const [clickedElement, setClickedElement] = useState<SVGObjectInfo | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number } | null>(null);
@@ -48,62 +44,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     return info;
   };
 
-  const handleClick = (event: MouseEvent) => {
-    try {
-      const target = (event.target as SVGElement).closest('path, g');
-      if (target && (target instanceof SVGPathElement || target instanceof SVGGElement)) {
-        let parentG = target.closest('g[id^="g"]');
-        if (!parentG) {
-          if (target instanceof SVGGElement && target.id.match(/^g\d+$/)) {
-            parentG = target;
-          }
-        }
-
-        if (parentG) {
-          const elementInfo = getElementInfo(parentG);
-          setClickedElement(elementInfo);
-          setIsModalOpen(true);
-          console.log('Clicked object info:', elementInfo);
-        }
-      }
-    } catch (error) {
-      console.error('Error handling click:', error);
-    }
-  };
-
-  const handleMouseMove = (event: MouseEvent) => {
-    try {
-      const target = (event.target as SVGElement).closest('path, g');
-      if (target && (target instanceof SVGPathElement || target instanceof SVGGElement)) {
-        let parentG = target.closest('g[id^="g"]');
-        if (!parentG) {
-          if (target instanceof SVGGElement && target.id.match(/^g\d+$/)) {
-            parentG = target;
-          }
-        }
-
-        if (parentG) {
-          setTooltip({
-            text: parentG.id,
-            x: event.clientX + 10,
-            y: event.clientY + 10
-          });
-        } else {
-          setTooltip(null);
-        }
-      } else {
-        setTooltip(null);
-      }
-    } catch (error) {
-      console.error('Error handling hover:', error);
-      setTooltip(null);
-    }
-  };
-
-  const handleMouseLeave = () => {
-    setTooltip(null);
-  };
-
   const handleZoomIn = () => {
     setScale(prevScale => Math.min(prevScale + 0.1, 2)); // Max scale 2
   };
@@ -119,9 +59,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     const observer = new MutationObserver(() => {
       const svgElement = svgContainer.querySelector('svg');
       if (svgElement) {
-        svgElement.addEventListener('click', handleClick);
-        svgElement.addEventListener('mousemove', handleMouseMove);
-        svgElement.addEventListener('mouseleave', handleMouseLeave);
+        // SVG element is ready
       }
     });
 
@@ -130,21 +68,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       subtree: true
     });
 
-    const svgElement = svgContainer.querySelector('svg');
-    if (svgElement) {
-      svgElement.addEventListener('click', handleClick);
-      svgElement.addEventListener('mousemove', handleMouseMove);
-      svgElement.addEventListener('mouseleave', handleMouseLeave);
-    }
-
     return () => {
       observer.disconnect();
-      const svgElement = svgContainer.querySelector('svg');
-      if (svgElement) {
-        svgElement.removeEventListener('click', handleClick);
-        svgElement.removeEventListener('mousemove', handleMouseMove);
-        svgElement.removeEventListener('mouseleave', handleMouseLeave);
-      }
     };
   }, [svgContent]);
 
@@ -230,29 +155,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
           />
         )}
       </div>
-      {tooltip && (
-        <div
-          style={{
-            position: 'fixed',
-            left: tooltip.x,
-            top: tooltip.y,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            color: 'white',
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '14px',
-            pointerEvents: 'none',
-            zIndex: 1000
-          }}
-        >
-          {tooltip.text}
-        </div>
-      )}
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        data={clickedElement}
-      />
       <div style={{ position: 'fixed', top: 0, left: 0, zIndex: 1000 }}>
         <button onClick={handleZoomIn}>Zoom In</button>
         <button onClick={handleZoomOut}>Zoom Out</button>
