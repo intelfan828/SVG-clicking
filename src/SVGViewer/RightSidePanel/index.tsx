@@ -43,7 +43,7 @@ const RightSidePanel: React.FC<RightSidePanelProps> = ({
               className={`tab-button ${activeTab === 'main' ? 'active' : ''}`}
               onClick={() => onTabChange('main')}
             >
-              Main
+              About
             </button>
             <button 
               className={`tab-button ${activeTab === 'contact' ? 'active' : ''}`}
