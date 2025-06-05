@@ -75,12 +75,36 @@
   transition: var(--transition);
   opacity: 0;
   box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
 }
 
 .details-panel.expanded {
   width: 20vw;
   padding: 24px;
   opacity: 1;
+}
+
+.details-panel.expanded > div {
+  overflow-y: auto;
+  height: 100%;
+  padding-right: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-color) var(--border-color);
+}
+
+.details-panel.expanded > div::-webkit-scrollbar {
+  width: 8px;
+}
+
+.details-panel.expanded > div::-webkit-scrollbar-track {
+  background: var(--border-color);
+  border-radius: 4px;
+}
+
+.details-panel.expanded > div::-webkit-scrollbar-thumb {
+  background-color: var(--accent-color);
+  border-radius: 4px;
 }
 
 .block-title {
