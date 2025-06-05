@@ -1,23 +1,10 @@
 import React, { useState } from 'react';
 import { blockData } from './Data';
-import type { AnswerSegment } from './Data';
+import type { AnswerSegment, BlockData } from './Data';
 import './SVGViewer.css';
 
 interface SVGViewerProps {
   svgContent?: string;
-}
-
-interface BlockData {
-  id: string;
-  lines: string[];
-  data: {
-    name: string;
-    description: string;
-    qa: Array<{
-      question: string;
-      answer: AnswerSegment[];
-    }>;
-  };
 }
 
 const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
