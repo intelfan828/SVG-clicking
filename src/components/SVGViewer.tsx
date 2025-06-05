@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { blockData, connectData } from './Data';
+import { blockData } from './Data';
+import type { AnswerSegment } from './Data';
 import './SVGViewer.css';
 
 interface SVGViewerProps {
@@ -14,7 +15,7 @@ interface BlockData {
     description: string;
     qa: Array<{
       question: string;
-      answer: string;
+      answer: AnswerSegment[];
     }>;
   };
 }
@@ -41,6 +42,21 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     }
   };
 
+  const renderAnswer = (answer: AnswerSegment[]) => {
+    return answer.map((segment, index) => {
+      switch (segment.type) {
+        case 'text':
+          return <span key={index}>{segment.content}</span>;
+        case 'bold':
+          return <strong key={index}>{segment.content}</strong>;
+        case 'break':
+          return <br key={index} />;
+        default:
+          return null;
+      }
+    });
+  };
+
   return (
     <div className="svg-viewer-container">
       <div className={`svg-viewer-content ${selectedBlock ? 'with-panel' : ''}`}>
@@ -62,8 +78,14 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
               <h3 className="qa-title">Q&A</h3>
               {selectedBlock.data.qa.map((item, index) => (
                 <div key={index} className="qa-item">
-                  <p className="question">Q: {item.question}</p>
-                  <p className="answer">A: {item.answer}</p>
+                  <div className="question">
+                    <strong>Question:</strong>
+                    <p>{item.question}</p>
+                  </div>
+                  <div className="answer">
+                    <strong>Answer:</strong>
+                    <p>{renderAnswer(item.answer)}</p>
+                  </div>
                 </div>
               ))}
             </div>

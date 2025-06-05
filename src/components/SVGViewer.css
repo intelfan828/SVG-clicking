@@ -125,17 +125,21 @@
   box-shadow: var(--shadow-md);
 }
 
-.question {
-  font-weight: 600;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
-  font-size: 1.05rem;
+.question, .answer {
+  margin-bottom: 1rem;
 }
 
-.answer {
-  line-height: 1.6;
+.question strong, .answer strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.question p, .answer p {
   color: var(--text-secondary);
-  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
 }
 
 .placeholder {
