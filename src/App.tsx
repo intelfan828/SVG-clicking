@@ -30,7 +30,6 @@ export default function App() {
       flexDirection: 'column', 
       height: '100%',
       width: '100%',
-      overflow: 'hidden'
     }}>
       <SVGViewer svgContent={svgContent} />
     </div>
