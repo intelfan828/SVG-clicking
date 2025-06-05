@@ -8,14 +8,6 @@ interface SVGObjectInfo {
   attributes: { [key: string]: string };
   path?: string;
   children?: SVGObjectInfo[];
-  position?: {
-    left: number;
-    top: number;
-    right: number;
-    bottom: number;
-    width: number;
-    height: number;
-  };
 }
 
 interface SVGViewerProps {
@@ -27,6 +19,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const [clickedElement, setClickedElement] = useState<SVGObjectInfo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [debugInfo, setDebugInfo] = useState<string>('');
+  const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
 
   const getElementInfo = (element: Element): SVGObjectInfo => {
     const attributes: { [key: string]: string } = {};
@@ -41,19 +34,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       className: element.className.toString(),
       attributes,
     };
-
-    // Get position information for the element
-    if (element instanceof SVGGraphicsElement) {
-      const bbox = element.getBBox();
-      info.position = {
-        left: bbox.x,
-        top: bbox.y,
-        right: bbox.x + bbox.width,
-        bottom: bbox.y + bbox.height,
-        width: bbox.width,
-        height: bbox.height
-      };
-    }
 
     if (element instanceof SVGPathElement) {
       info.path = element.getAttribute('d') || undefined;
@@ -93,6 +73,39 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     }
   };
 
+  const handleMouseMove = (event: MouseEvent) => {
+    try {
+      const target = (event.target as SVGElement).closest('path, g');
+      if (target && (target instanceof SVGPathElement || target instanceof SVGGElement)) {
+        let parentG = target.closest('g[id^="g"]');
+        if (!parentG) {
+          if (target instanceof SVGGElement && target.id.match(/^g\d+$/)) {
+            parentG = target;
+          }
+        }
+
+        if (parentG) {
+          setTooltip({
+            text: parentG.id,
+            x: event.clientX + 10,
+            y: event.clientY + 10
+          });
+        } else {
+          setTooltip(null);
+        }
+      } else {
+        setTooltip(null);
+      }
+    } catch (error) {
+      console.error('Error handling hover:', error);
+      setTooltip(null);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setTooltip(null);
+  };
+
   useEffect(() => {
     const svgContainer = svgRef.current;
     if (!svgContainer) return;
@@ -101,6 +114,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       const svgElement = svgContainer.querySelector('svg');
       if (svgElement) {
         svgElement.addEventListener('click', handleClick);
+        svgElement.addEventListener('mousemove', handleMouseMove);
+        svgElement.addEventListener('mouseleave', handleMouseLeave);
       }
     });
 
@@ -112,6 +127,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     const svgElement = svgContainer.querySelector('svg');
     if (svgElement) {
       svgElement.addEventListener('click', handleClick);
+      svgElement.addEventListener('mousemove', handleMouseMove);
+      svgElement.addEventListener('mouseleave', handleMouseLeave);
     }
 
     return () => {
@@ -119,6 +136,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       const svgElement = svgContainer.querySelector('svg');
       if (svgElement) {
         svgElement.removeEventListener('click', handleClick);
+        svgElement.removeEventListener('mousemove', handleMouseMove);
+        svgElement.removeEventListener('mouseleave', handleMouseLeave);
       }
     };
   }, [svgContent]);
@@ -136,6 +155,24 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
           />
         )}
       </div>
+      {tooltip && (
+        <div
+          style={{
+            position: 'fixed',
+            left: tooltip.x,
+            top: tooltip.y,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            color: 'white',
+            padding: '4px 8px',
+            borderRadius: '4px',
+            fontSize: '14px',
+            pointerEvents: 'none',
+            zIndex: 1000
+          }}
+        >
+          {tooltip.text}
+        </div>
+      )}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
