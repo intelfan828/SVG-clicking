@@ -9,6 +9,7 @@ interface SVGViewerProps {
 
 const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const [selectedBlock, setSelectedBlock] = useState<BlockData | null>(null);
+  const [currentQAIndex, setCurrentQAIndex] = useState(0);
 
   const handleSVGClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as HTMLElement;
@@ -22,10 +23,23 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         const block = blockData.find(block => block.id === gId);
         if (block) {
           setSelectedBlock(block);
+          setCurrentQAIndex(0); // Reset Q&A index when selecting a new block
         } else {
           setSelectedBlock(null);
         }
       }
+    }
+  };
+
+  const handlePrevQA = () => {
+    if (selectedBlock && currentQAIndex > 0) {
+      setCurrentQAIndex(currentQAIndex - 1);
+    }
+  };
+
+  const handleNextQA = () => {
+    if (selectedBlock && currentQAIndex < selectedBlock.data.qa.length - 1) {
+      setCurrentQAIndex(currentQAIndex + 1);
     }
   };
 
@@ -63,18 +77,39 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
             <p className="block-description">{selectedBlock.data.description}</p>
             <div className="qa-section">
               <h3 className="qa-title">Q&A</h3>
-              {selectedBlock.data.qa.map((item, index) => (
-                <div key={index} className="qa-item">
-                  <div className="question">
-                    <strong>Question:</strong>
-                    <p>{item.question}</p>
+              {selectedBlock.data.qa.length > 0 && (
+                <>
+                  <div className="qa-navigation">
+                    <button 
+                      className="qa-nav-button"
+                      onClick={handlePrevQA}
+                      disabled={currentQAIndex === 0}
+                    >
+                      Previous
+                    </button>
+                    <span className="qa-counter">
+                      {currentQAIndex + 1} / {selectedBlock.data.qa.length}
+                    </span>
+                    <button 
+                      className="qa-nav-button"
+                      onClick={handleNextQA}
+                      disabled={currentQAIndex === selectedBlock.data.qa.length - 1}
+                    >
+                      Next
+                    </button>
                   </div>
-                  <div className="answer">
-                    <strong>Answer:</strong>
-                    <p>{renderAnswer(item.answer)}</p>
+                  <div className="qa-item">
+                    <div className="question">
+                      <strong>Question:</strong>
+                      <p>{selectedBlock.data.qa[currentQAIndex].question}</p>
+                    </div>
+                    <div className="answer">
+                      <strong>Answer:</strong>
+                      <p>{renderAnswer(selectedBlock.data.qa[currentQAIndex].answer)}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                </>
+              )}
             </div>
           </div>
         ) : (
