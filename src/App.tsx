@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import SVGViewer from './components/SVGViewer';
+import SVGViewer from './SVGViewer';
 
 export default function App() {
   const [svgContent, setSvgContent] = useState<string>('');
