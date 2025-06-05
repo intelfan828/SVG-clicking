@@ -18,7 +18,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const svgRef = useRef<HTMLDivElement>(null);
   const [clickedElement, setClickedElement] = useState<SVGObjectInfo | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [debugInfo, setDebugInfo] = useState<string>('');
   const [tooltip, setTooltip] = useState<{ text: string; x: number; y: number } | null>(null);
   const [scale, setScale] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
@@ -53,10 +52,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     try {
       const target = (event.target as SVGElement).closest('path, g');
       if (target && (target instanceof SVGPathElement || target instanceof SVGGElement)) {
-        // Find the parent g tag with id pattern g2, g3, etc.
         let parentG = target.closest('g[id^="g"]');
         if (!parentG) {
-          // If the clicked element itself is a g tag with the pattern, use it
           if (target instanceof SVGGElement && target.id.match(/^g\d+$/)) {
             parentG = target;
           }
@@ -65,14 +62,12 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         if (parentG) {
           const elementInfo = getElementInfo(parentG);
           setClickedElement(elementInfo);
-          setDebugInfo(`Clicked: ${target.tagName} (ID: ${target.id}), Parent G: ${parentG.id}`);
           setIsModalOpen(true);
           console.log('Clicked object info:', elementInfo);
         }
       }
     } catch (error) {
       console.error('Error handling click:', error);
-      setDebugInfo(`Click error: ${error}`);
     }
   };
 
