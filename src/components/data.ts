@@ -41,6 +41,14 @@ export const blockData: BlockData[] = [
                     ]
                 },
                 {
+                    question: "What is your team ultimately accountable for?",
+                    answer: [
+                        { type: "text", content: "Our team's primary goal is to focus on designs and standards to ensure a stable, resilient datacenter environment for JPMC. This includes " },
+                        { type: "bold", content: "project/program/product support " },
+                        { type: "text", content: "throughout DCS and ownership of all engineered solutions for product deployment at a global level." }
+                    ]
+                },
+                {
                     question: "Which services, systems, or tools does your team directly own or manage?",
                     answer: [
                         { type: "text", content: "Our team's primary goal is to focus on designs and standards to ensure a stable, resilient datacenter environment for JPMC. This includes:" },
