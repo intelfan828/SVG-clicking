@@ -130,7 +130,7 @@
 }
 
 .question strong, .answer strong {
-  display: block;
+  display: inline-block;
   color: var(--text-primary);
   font-size: 1.1rem;
   margin-bottom: 0.5rem;
