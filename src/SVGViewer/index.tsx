@@ -15,34 +15,55 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const [currentQAIndex, setCurrentQAIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<TabType>('main');
   const [highlightedLines, setHighlightedLines] = useState<string[]>([]);
+  const [hoveredBlock, setHoveredBlock] = useState<BlockData | null>(null);
 
-  // Update highlighted lines when selected block changes
+  // Update highlighted lines when selected block or hovered block changes
   useEffect(() => {
     if (selectedBlock) {
       setHighlightedLines(selectedBlock.lines);
+    } else if (hoveredBlock) {
+      setHighlightedLines(hoveredBlock.lines);
     } else {
       setHighlightedLines([]);
     }
-  }, [selectedBlock]);
+  }, [selectedBlock, hoveredBlock]);
+
+  const findBlockFromElement = (element: Element): BlockData | null => {
+    const parentG = element.closest('g[id^="g"]');
+    if (parentG) {
+      const gId = parentG.id;
+      return blockData.find(block => block.id === gId) || null;
+    }
+    return null;
+  };
 
   const handleSVGClick = (event: React.MouseEvent<HTMLDivElement>) => {
-    const target = event.target as HTMLElement;
+    const target = event.target as Element;
     const clickedElement = target.closest('g, path');
     
     if (clickedElement) {
-      const parentG = clickedElement.closest('g[id^="g"]');
-      
-      if (parentG) {
-        const gId = parentG.id;
-        const block = blockData.find(block => block.id === gId);
-        if (block) {
-          setSelectedBlock(block);
-          setCurrentQAIndex(0); // Reset Q&A index when selecting a new block
-        } else {
-          setSelectedBlock(null);
-        }
+      const block = findBlockFromElement(clickedElement);
+      if (block) {
+        setSelectedBlock(block);
+        setCurrentQAIndex(0); // Reset Q&A index when selecting a new block
+      } else {
+        setSelectedBlock(null);
       }
     }
+  };
+
+  const handleSVGHover = (event: React.MouseEvent<HTMLDivElement>) => {
+    const target = event.target as Element;
+    const hoveredElement = target.closest('g, path');
+    
+    if (hoveredElement) {
+      const block = findBlockFromElement(hoveredElement);
+      setHoveredBlock(block);
+    }
+  };
+
+  const handleSVGLeave = () => {
+    setHoveredBlock(null);
   };
 
   // Add styles for highlighted lines
@@ -52,6 +73,12 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         stroke-width: 3px !important;
         stroke: #ff0000 !important;
         filter: drop-shadow(0 0 2px rgba(255, 0, 0, 0.5));
+      }
+    `).join('')}
+
+    ${blockData.map(block => `
+      #${block.id} {
+        cursor: pointer;
       }
     `).join('')}
   `;
@@ -77,6 +104,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
             <div 
               className="svg-container"
               onClick={handleSVGClick}
+              onMouseMove={handleSVGHover}
+              onMouseLeave={handleSVGLeave}
               dangerouslySetInnerHTML={{ __html: svgContent }} 
             />
           </>
