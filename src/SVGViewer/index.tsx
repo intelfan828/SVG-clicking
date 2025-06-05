@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { blockData } from '../Data/data';
-import type { AnswerSegment, BlockData } from '../Data/data';
+import { blockData } from '../Data/blockData';
+import { contactData } from '../Data/contactData';
+import type { AnswerSegment, BlockData } from '../Data/blockData';
 import './SVGViewer.css';
 
 interface SVGViewerProps {
@@ -134,10 +135,22 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
             ) : (
               <div className="tab-content">
                 <h2 className="block-title">Contact Information</h2>
-                <p className="contact-info">
-                  For more information about {selectedBlock.data.name}, please contact:
-                </p>
-                {/* Add contact information here */}
+                <div className="contact-section">
+                  <div className="team-section">
+                    <h3>Our Team</h3>
+                    <img 
+                      src={contactData[0].image} 
+                      alt="Team" 
+                      className="team-image"
+                    />
+                  </div>
+                  <div className="contact-info-section">
+                    <h3>Contact Us</h3>
+                    <p className="contact-info">
+                      {contactData[0].info}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
