@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { blockData } from '../Data/blockData';
-import { contactData } from '../Data/contactData';
-import type { AnswerSegment, BlockData } from '../Data/blockData';
+import type { BlockData } from '../Data/blockData';
 import RightSidePanel from './RightSidePanel';
 import './SVGViewer.css';
 
@@ -46,20 +45,6 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     if (selectedBlock && currentQAIndex < selectedBlock.data.qa.length - 1) {
       setCurrentQAIndex(currentQAIndex + 1);
     }
-  };
-
-  const renderAnswer = (answer: AnswerSegment[]) => {
-    return answer.map((segment, index) => {
-      switch (segment.type) {
-        case 'text':
-        case 'bold':
-          return <span key={index} style={{ fontWeight: segment.type === 'bold' ? 'bold' : 'normal' }}>{segment.content}</span>;
-        case 'break':
-          return <br key={index} />;
-        default:
-          return null;
-      }
-    });
   };
 
   return (
