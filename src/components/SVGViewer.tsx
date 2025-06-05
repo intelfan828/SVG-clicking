@@ -34,6 +34,8 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         const block = blockData.find(block => block.id === gId);
         if (block) {
           setSelectedBlock(block);
+        } else {
+          setSelectedBlock(null);
         }
       }
     }
@@ -41,7 +43,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
 
   return (
     <div className="svg-viewer-container">
-      <div className="svg-viewer-content">
+      <div className={`svg-viewer-content ${selectedBlock ? 'with-panel' : ''}`}>
         {svgContent && (
           <div 
             className="svg-container"
@@ -51,7 +53,7 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         )}
       </div>
       
-      <div className="details-panel">
+      <div className={`details-panel ${selectedBlock ? 'expanded' : ''}`}>
         {selectedBlock ? (
           <div>
             <h2 className="block-title">{selectedBlock.data.name}</h2>
