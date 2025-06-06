@@ -2,8 +2,8 @@
 export const connectData = [
     {
         id: "g3884",
-        to: "g2378",
         from: "g1778",
+        to: "g2378",
         data: {
             name: "DC Engineering --> DC Exit & Strategy (DCE&S)",
             summary: "Technical deployment & support",
@@ -12,9 +12,9 @@ export const connectData = [
         }
     },
     {
-        id: "g3884",
-        to: "g3888",
+        id: "g3888",
         from: "g1778",
+        to: "g1618",
         data: {
             name: "DC Engineering --> Capacity & Placement Capacity",
             summary: "Design and Standards",

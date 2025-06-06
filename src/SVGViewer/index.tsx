@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { blockData } from '../Data/blockData';
+import { connectData } from '../Data/connectData';
 import type { BlockData } from '../Data/blockData';
 import RightSidePanel from './RightSidePanel';
+import SModal from './SModal';
 import './SVGViewer.css';
 
 interface SVGViewerProps {
@@ -16,6 +18,9 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
   const [activeTab, setActiveTab] = useState<TabType>('main');
   const [highlightedLines, setHighlightedLines] = useState<string[]>([]);
   const [hoveredBlock, setHoveredBlock] = useState<BlockData | null>(null);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLine, setSelectedLine] = useState<any>(null);
+  const [hoveredLine, setHoveredLine] = useState<any>(null);
 
   // Update highlighted lines when selected block or hovered block changes
   useEffect(() => {
@@ -23,10 +28,12 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
       setHighlightedLines(selectedBlock.lines);
     } else if (hoveredBlock) {
       setHighlightedLines(hoveredBlock.lines);
+    } else if (hoveredLine) {
+      setHighlightedLines([hoveredLine.id]);
     } else {
       setHighlightedLines([]);
     }
-  }, [selectedBlock, hoveredBlock]);
+  }, [selectedBlock, hoveredBlock, hoveredLine]);
 
   const findBlockFromElement = (element: Element): BlockData | null => {
     const parentG = element.closest('g[id^="g"]');
@@ -37,17 +44,34 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     return null;
   };
 
+  const findLineFromElement = (element: Element) => {
+    const parentG = element.closest('g[id^="g"]');
+    if (parentG) {
+      const gId = parentG.id;
+      return connectData.find(line => line.id === gId) || null;
+    }
+    return null;
+  };
+
   const handleSVGClick = (event: React.MouseEvent<HTMLDivElement>) => {
     const target = event.target as Element;
     const clickedElement = target.closest('g, path');
     
     if (clickedElement) {
       const block = findBlockFromElement(clickedElement);
-      if (block) {
+      const line = findLineFromElement(clickedElement);
+      
+      if (line) {
+        setSelectedLine(line);
+        setShowModal(true);
+        setSelectedBlock(null);
+      } else if (block) {
         setSelectedBlock(block);
-        setCurrentQAIndex(0); // Reset Q&A index when selecting a new block
+        setCurrentQAIndex(0);
+        setShowModal(false);
       } else {
         setSelectedBlock(null);
+        setShowModal(false);
       }
     }
   };
@@ -58,12 +82,29 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
     
     if (hoveredElement) {
       const block = findBlockFromElement(hoveredElement);
-      setHoveredBlock(block);
+      const line = findLineFromElement(hoveredElement);
+      
+      if (line) {
+        setHoveredLine(line);
+        setHoveredBlock(null);
+      } else if (block) {
+        setHoveredBlock(block);
+        setHoveredLine(null);
+      } else {
+        setHoveredBlock(null);
+        setHoveredLine(null);
+      }
     }
   };
 
   const handleSVGLeave = () => {
     setHoveredBlock(null);
+    setHoveredLine(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+    setSelectedLine(null);
   };
 
   // Add styles for highlighted lines
@@ -78,6 +119,12 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
 
     ${blockData.map(block => `
       #${block.id} {
+        cursor: pointer;
+      }
+    `).join('')}
+
+    ${connectData.map(line => `
+      #${line.id} {
         cursor: pointer;
       }
     `).join('')}
@@ -120,6 +167,14 @@ const SVGViewer: React.FC<SVGViewerProps> = ({ svgContent }) => {
         onPrevQA={handlePrevQA}
         onNextQA={handleNextQA}
       />
+
+      {showModal && selectedLine && (
+        <SModal
+          isOpen={showModal}
+          onClose={handleCloseModal}
+          data={selectedLine.data}
+        />
+      )}
     </div>
   );
 };
